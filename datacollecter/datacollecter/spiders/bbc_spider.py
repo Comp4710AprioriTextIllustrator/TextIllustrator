@@ -3,10 +3,11 @@ import scrapy
 import re
 
 class BbcSpider(scrapy.Spider):
+    # Name must be specified outside of the constructor in order to be able to crawl using this spider
     name = "bbc"
     
     def __init__(self, *args):
-        self.allowed_domains = ["bbc.com"]
+        self.allowed_domains = ["bbc.com", "bbc.co.uk"]
         self.start_urls = ["http://www.bbc.com"]
         self.supported_news_domains = {
             re.compile('.*news\/world-.*'): self.parse_world_article
