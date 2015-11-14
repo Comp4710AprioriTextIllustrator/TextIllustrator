@@ -15,7 +15,9 @@ class DatacollecterItem(scrapy.Item):
 
 class ArticleItem(scrapy.Item):
     title = scrapy.Field()
+    time = scrapy.Field()
     text = scrapy.Field()
+    url = scrapy.Field()
     images = scrapy.Field()
 
 class ImageItem(scrapy.Item):
