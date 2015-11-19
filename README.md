@@ -3,7 +3,7 @@
 Dependencies are installed using pip. Installation instructions for pip can be found [here](https://pip.readthedocs.org/en/stable/installing)
 ```
 pip install scrapy
-pip install mongodb
+pip install pymongo
 ```
 
 ## Running a spider
