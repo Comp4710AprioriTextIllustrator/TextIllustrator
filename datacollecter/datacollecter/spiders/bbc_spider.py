@@ -20,8 +20,7 @@ class BbcSpider(scrapy.Spider):
         self.supported_news_domains = {
             self.news_re: self.parse_world_article
         }
-        
-        self.articles_seen = []
+
         self.article_count = 0
     
         scrapy.Spider.__init__(self, *args)
@@ -35,11 +34,11 @@ class BbcSpider(scrapy.Spider):
     
     def parse_article(self, response):
         # Only works for specific sections
-        if response.url not in self.articles_seen and self.crawler.stats.get_value('pages_crawled') < self.max_articles:
+        if self.crawler.stats.get_value('pages_crawled') < self.max_articles:
             for supported_news_domain in self.supported_news_domains:
                 if supported_news_domain.match(response.url):
                     article_item = self.supported_news_domains[supported_news_domain](response)
-                    if article_item and response.url not in self.articles_seen:
+                    if article_item:
                         self.crawler.stats.inc_value('pages_crawled')
                         yield article_item
         
@@ -52,11 +51,10 @@ class BbcSpider(scrapy.Spider):
                             invalid = True
                             break
                             
-                    if invalid or article_url.extract() in self.articles_seen:
+                    if invalid:
                         continue
                             
                     if self.crawler.stats.get_value('pages_crawled') < self.max_articles:
-                        self.articles_seen.append(response.url)
                         full_article_url = response.urljoin(article_url.extract())
                         yield scrapy.Request(full_article_url, callback=self.parse_article)
         
