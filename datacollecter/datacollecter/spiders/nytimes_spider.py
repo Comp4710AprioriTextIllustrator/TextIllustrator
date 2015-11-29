@@ -1,25 +1,44 @@
 import datacollecter
 import scrapy
+import re
 
 class NyTimesSpider(scrapy.Spider):
     name = "nytimes"
     allowed_domains = ["nytimes.com"]
     start_urls = ["http://www.nytimes.com"]
+    max_articles = 2000
+    invalid_res = [
+        re.compile('.*\/travel\/.*'),
+    ]
     
     def parse(self, response):
         # Get the top news story links
-        articles_on_page = response.xpath("//h1[@class = 'story-heading']//a[1]//@href")
-        # Get all other story links
-        articles_on_page.extend(response.xpath("//h2[@class = 'story-heading']//a[1]//@href"))
+        article_item = self.parse_article(response)
+        if article_item is not None and self.crawler.stats.get_value('pages_crawled') < self.max_articles:
+            self.crawler.stats.inc_value('pages_crawled')
+            yield article_item
         
+        articles_on_page = response.xpath("//a//@href")
         for article in articles_on_page:
-            full_article_url = response.urljoin(article.extract())
-            yield scrapy.Request(full_article_url, callback=self.parse_article)
+            if self.crawler.stats.get_value('pages_crawled') < self.max_articles:
+                full_article_url = response.urljoin(article.extract())
+                
+                invalid = False
+                for invalid_re in self.invalid_res:
+                    if invalid_re.match(full_article_url):
+                        invalid = True
+                        break
+                        
+                if invalid:
+                    yield scrapy.Request(full_article_url, callback=self.parse)
         
     def parse_article(self, response):
         # Only want the h1 story-headings, so story links on the page are not accidentally pulled as well
         utf8_title = ' '.join(response.xpath("//h1[@id = 'story-heading']//text()").extract())
         title = self.__remove_non_ascii_chars(utf8_title)
+        
+        if title is None:
+            return None
         
         # Ignore articles with no title, a few links to non-article pages are being returned and I'm not sure why
         if len(title) >= 1:
@@ -29,7 +48,8 @@ class NyTimesSpider(scrapy.Spider):
             article_item = datacollecter.items.ArticleItem()
             article_item['title'] = title
             article_item['text'] = text
-            yield article_item
+            return article_item
+        return None
 
     def __remove_non_ascii_chars(self, utf8_text):
         utf8_char_string = []
