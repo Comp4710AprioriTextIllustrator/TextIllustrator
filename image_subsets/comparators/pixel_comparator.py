@@ -18,7 +18,7 @@ if __name__=="__main__":
             a = Image.open(sys.argv[1])
             b = Image.open(sys.argv[2])
             print PixelComparator().compare(a, b)
-        except Error as e:
+        except Exception as e:
             usage()
     else:
         usage()
