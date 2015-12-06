@@ -85,6 +85,7 @@ This will produce 3 sets
 '''
 if __name__=="__main__":
     if len(sys.argv) == 2:
+        image_iterator.max_images_per_block = 1
         try:
             image_subsets = None
             with open(sys.argv[1], 'r') as subset_file:
