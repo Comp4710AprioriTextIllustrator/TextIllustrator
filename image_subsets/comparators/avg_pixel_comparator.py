@@ -44,6 +44,7 @@ class AvgPixelsComparator(object):
                 
                 image1_y += image1_kernel_vertical_move_amt
                 image2_y += image2_kernel_vertical_move_amt
+                print kernel_avg_image1, kernel_avg_image2
                 if not self.__avg_comparator(kernel_avg_image1, kernel_avg_image2):
                     same_image = False
                     break
@@ -63,8 +64,10 @@ class AvgPixelsComparator(object):
         
     def __get_colour_avg_of_kernel(self, kernel_x, kernel_y, kernel_width, kernel_height, image):
         pixel_sum = 0
+        print "New Kernel"
         for i in range(kernel_width):
             for j in range(kernel_height):
+                print kernel_x, kernel_y, i, j, image.getpixel((int(kernel_x) + i, int(kernel_y) + j))
                 pixel_sum += image.getpixel((int(kernel_x) + i, int(kernel_y) + j))
         return pixel_sum / float(kernel_width * kernel_height)
             

@@ -26,6 +26,16 @@ language_model = generate_model(sites, language_name, settings)
 ```
 word_sets = salient_sets(article_set)
 ```
-4) Convert word sets into image sets...
+4) Download images for word sets...
+
+5) Find common subsets of images
+```
+image_sets = [image_set, image_set, ..., image_set]
+common_image_subset = get_common_subset_of_image_sets(image_sets, comparator)
+````
+Note: 
+* image_set is a set of file paths to the downloaded images
+* comparator should be a chained comparator at least both a pixel comparator and average pixel comparator in the chain
+
 
 5) Convert word sets into a set of illustrations
