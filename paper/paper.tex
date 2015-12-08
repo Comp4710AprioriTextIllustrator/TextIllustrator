@@ -7,6 +7,12 @@
 \begin{document}
 \section{Abstract}
 \section{Generating Dataset(s)}
-In our study we created our own dataset(s) in order to generate a dataset containing the data we need. We generated the dataset by crawling and scraping separate news sites. Our data is tuple of the source, date, and text of an article.
+In our study we created our own dataset(s) in order to generate a dataset containing the data we need. We generated the dataset by crawling and scraping separate news sites. These new sites include the British Broadcasting Corporation, the New York Times, De Telegraaf, and De Volkskrant. Our data is tuple of the source, date, and text of an article.
 Instead of gathering data related to images, we use google image search to generate a set of images related to a set and subsets of the words we extract from a text. In other related studies this task can be done by adding images that appear with a text, but we chose to use google image search to reduce the amount of scraping we need to do to generate our dataset.
+\section{Generating Relevant Image Set}
+After downloading images from the Google search image API of salient word sets from the article, the common subset of images within these sets must be found. This can be done by finding the intersection of all the sets. In our implemnetation, we first created subset that was the intersection of two sets and then iteratively performed the intersection of this subset with each other set of images.
+Since the number of images is relatively large, all the images in two sets could not be loaded into memory at once. To deal with this issue, the intersection algorithm used was a block-based intersection which loads two blocks of 50 images into memory, then compares each image in 1 block to each image in the other block and output images which are in both blocks.
+To compare the images two different comparison tests were used. For two images to be considered the same, they must pass either or both of the comparison tests. The first test was a simple pixel by pixel comparison, if for each pixel in each image the values of the pixels were equal then the two images are the same. The second comparison test was to take the average colour of all the pixels in a different square regions of the images and compare them. If the average colours in each of the regions were the same, then the images are considered the same.
+\section{Problems}
+One problem we encountered was that the Google image seach API only allows for 100 searches per day for free, so gathering enough images for each of the salient sets was impossible.
 \end{document}
