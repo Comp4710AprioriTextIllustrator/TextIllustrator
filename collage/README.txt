@@ -1,3 +1,5 @@
+Parts of the repository 'fwenzel / collage' were used to create this collage code.
+
 
 NOTES
 ----------------------------------------------------
