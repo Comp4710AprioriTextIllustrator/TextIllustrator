@@ -9,4 +9,46 @@
 \section{Generating Dataset(s)}
 In our study we created our own dataset(s) in order to generate a dataset containing the data we need. We generated the dataset by crawling and scraping separate news sites. Our data is tuple of the source, date, and text of an article.
 Instead of gathering data related to images, we use google image search to generate a set of images related to a set and subsets of the words we extract from a text. In other related studies this task can be done by adding images that appear with a text, but we chose to use google image search to reduce the amount of scraping we need to do to generate our dataset.
+\section{Generate Language Models}
+We include a number of steps for generating language models that each build on each other. This allows us to create illustrations at different steps of computation and view the effects of different algorithms.
+\subsection{L1, Frequency and Confidence}
+In our study we create language models for languages of articles that we illustrate. We do this using apriori methods and first find frequency for each word and for each set of words with each set being of length N or less. We include a settings parameter to allow for the inclusion of splits on choice punctuation marks. In this stage we generate frequency overall, and frequency over articles for each word and word pair. This stage should be achieved while parsing each article only once.
+
+-Frequency Overall is the sum of the frequency of a given word set in each article for a given language
+-Frequency Over Articles is the number of articles a word appears in for a given language
+
+We expect the least interesting articles would appear the most frequently across articles in any given language. In-frequent word sets over all articles that are frequent in a small set of articles are likely to be salient for a given article. It is difficult to establish word and word-set salience even with the frequencies. Some words may be infrequent and frequent in articles, but not really descriptive of the article in general. In using this stage it is necessary to establish
+cut-off points for salient and non-salient word-sets.
+
+\subsection{L1, Possible Extensions}
+A possible extension of L1 is to take into account the time each article is written and published. We expect that certain words are more likely to be published during certain time periods of the year such as during holidays (e.g. Christmas, Thanksgiving, etc..). Also, articles related to a crisis would likely be published during a certain span of time and possibly articles would be published in rememberance of them (e.g. 911).
+
+\subsection{L2, Sub-words and Word Order}
+In many words their is a tendency for certain word-parts to take a certain order which may vary for a number of reasons such as whether a phrase is a question or statement. In the L2 stage we this into account and try to determine whether a language has such an order and when or whether it changes during certain contexts. We can determine whether there is a word order by determining if two or more words appear along-side each other relatively frequently.
+
+Another concern about word parts is that certain parts, such as nouns, may be considered more salient for illustration. It may be possible to determine whether a particular word is a noun, verb, etc. by considering their frequency along-side closely occuring words and their order. But, this is a difficult task on its own.
+
+Another consideration is that some languages compound words together or have prefixes and suffixes attached to words in certain contexts. 
+In order for us to determine whether a word occurs within a compound word would be to check whether it appears alone, 
+it's frequency overall (the word 'a' is likely to appear in a lot of words, but it is not a subword), and its frequency as a subword.
+
+\section{Generating Salient Sets}
+Generating salient sets is fairly easy compared with establishing a language model. To get a set of salient-words for a given article we provide the L1 statistics for a given article and take the language model for the article. We use the article to remove non-salient words from the article and then use a combination of statistics of the word for the article and in the language.
+
+\section{Generating Image Sets}
+In our project we require a large number of images with similar annotations of keywords for each language used. The keywords for certain images may differ for each image, but there should be an intersection among the images for a select set of keywords. Since this is difficult to obtain on our own we, in our project, turned to google to obtain sets of images for keywords.
+\subsection{I1}
+In I1 we obtain a set of images based on a set of keywords. Among the image sets we would assume that we would 
+be able to generate an intersection of image sets that would be representative of two articles discussing the 
+same thing. Some articles, not in the intersection would be better representative of a given article and even their language. 
+Possibly, we would be able to even find images or sets of images that would represent a difference in how speakers of two different languages
+view the topic or even the words and phrases themselves.
+
+\subsection{I2, Possible extension}
+A possible extension of this stage would be to incorporate machine learning and computer vision to be able to find features and feature-groups within an image. Using features and feature-groups we may be able to find which features or feature-groups relate to each keyword or keyword-set and pick images based on this. This step is already improved if we are able to match multiple modifications of a single image and throwing away the modified versions. Looking at an image on a feature basis allows
+us to generate a better set of images that represent the keywords better.
+
+\section{Generating Illustrations}
+The last and final step in our project is how we visualize the image-sets and the keyword salience. Ideally we would be able to combine the images into a single images, but that is a difficult task even if we know what features and feature-groups a keyword or keyword-set occurs too.
+
 \end{document}
