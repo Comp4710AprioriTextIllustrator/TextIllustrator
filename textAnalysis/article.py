@@ -1,5 +1,6 @@
 from word import Word
 import pymongo
+from language import LanguageModel_Mongo, LanguageInfoModel_Mongo
 
 class ArticleDB(object):
     __client = pymongo.MongoClient()
@@ -75,16 +76,17 @@ class Article(object):
 
         w.superwords[word.lower()] = w.superwords.get(word.lower(), 0) + 1
 
-    def __update_word__(self, word):
+    def __update_word__(self, word, word_count):
         if word == ' ':
             return
-        print word
+        #print word
         if self.words.get(word.lower(), None) == None:
             self.words[word.lower()] = Word(word)
 
         if self.words[word.lower()].freq == 0:
             self.words[word.lower()].freq += self.words[word.lower()].sub_freq
         self.words[word.lower()].freq += 1
+        self.words[word.lower()].word_count = word_count
         """
         update frequency
         """
@@ -97,40 +99,11 @@ class Article(object):
 
                     self.__update_subword__(sub_word, word)
 
-    def analyze(self, mxSetSize=1):
-        words = self.text.replace('\n',' ')
-        words = words.replace('\t',' ')
-        words = words.replace('.', '')
-        words = words.replace(',', '')
-        words = words.replace('/', '')
-        words = words.replace('(', '')
-        words = words.replace(')', '')
-        words = words.replace(';', '')
-        words = words.replace('\"', '')
-        words = words.replace('?', '')
-        words = words.replace('!', '')
-        words = words.replace('[', '')
-        words = words.replace(']', '')
-        words = words.split(' ')
-        #rehersal_loop = []*self.__rehersal_loop_length__
-        wset = []
-        for w in words:
-            """
-            get distance from previous words
-            """
-            if len(wset) >= mxSetSize:
-                temp = []
-                temp[0:(mxSetSize-1)] = wset[1:mxSetSize]
-                wset = temp
-            else:
-                wset.append(w)
+    def analyze(self, mxSetSize=1, update_model=True):
+        for w in self.genWordSets(mxSetSize):
+            self.__update_word__(w[0], w[1])
 
-            for j in range(0, len(wset)+1):
-                #print wset[0:j]
-                #nw = ' '.join(wset[0:j])
-                self.__update_word__(' '.join(wset[0:j]))
-
-        if self.language_model != None:
+        if self.language_model != None and update_model:
             for k, v in self.words.iteritems():
                 #v.addArticle(self)
                 self.language_model.update_word(v, self)
@@ -150,18 +123,67 @@ class Article(object):
 
         return wordsByFreq
 
-    def getSalientSets(self, mxSetSize=1, seperators=[]):
+    def genWordSets(self, mxSize):
+        words = self.text.replace('\n',' ')
+        words = words.replace('\t',' ')
+        words = words.replace('.', '')
+        words = words.replace(',', '')
+        words = words.replace('/', '')
+        words = words.replace('(', '')
+        words = words.replace(')', '')
+        words = words.replace(';', '')
+        words = words.replace('\"', '')
+        words = words.replace('\'', '')
+        words = words.replace('?', '')
+        words = words.replace('!', '')
+        words = words.replace('[', '')
+        words = words.replace(']', '')
+        words = words.split(' ')
+
+        wset = []
+        for w in words:
+            if len(wset) >= mxSize:
+                temp = wset[1:mxSize]
+                wset = temp
+            elif w != '' and w != ' ':
+                wset.append(w)
+
+                for i in range(1, len(wset)+1):
+                    yield [' '.join(wset[0:i]), i]
+
+    def getSalientSets(self, lang, mxSetSize=1, AFreqP=0.20, OFreqP=0.0625):
         sets = dict()
+        words = self.text.replace('\n',' ')
+        words = words.replace('\t',' ')
+        words = words.replace('.', '')
+        words = words.replace(',', '')
+        words = words.replace('/', '')
+        words = words.replace('(', '')
+        words = words.replace(')', '')
+        words = words.replace(';', '')
+        words = words.replace('\"', '')
+        words = words.replace('?', '')
+        words = words.replace('!', '')
+        words = words.replace('[', '')
+        words = words.replace(']', '')
         words = words.split(' ')
         setlen = 0
-        for wi in range(0, len(words)):
-            setlen = max(wi + mxSetSize, len(words))
-            wset = []
-            for wj in range(wi, setlen):
-                "is salient"
-                wset.append(words[wi])
-                "look up in database"
+        l = LanguageInfoModel_Mongo()
+        linfo = l.getLanguage(self.language_model.lang)
 
+        AFreq = linfo["articleCount"]*AFreqP
+        OFreq = linfo["maxFreq"]*OFreqP
 
-            print "look up..."
+        ret = []
+        for w in self.genWordSets(mxSetSize):
+            wdata = self.language_model.getWord(w[0])
+            if wdata != None:
+                #print "TEST ", w
+                wAFreq = wdata.articleCount()
+                #print wdata.articles
+                wOFreq = wdata.getFreq()
 
+                if wOFreq < OFreq and wAFreq < AFreq:
+                    ret.append(w[0])
+
+        return ret

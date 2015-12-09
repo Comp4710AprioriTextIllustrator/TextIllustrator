@@ -45,14 +45,26 @@ class LanguageModel(object):
 
         return flatList
         """
-
-class LanguageModel_Mongo(object):
-    def __init__(self, lang_uri, lang_db, languageModel):
-        self.lang_uri = lang_uri
-        self.lang_db = lang_db
+class LanguageInfoModel_Mongo(object):
+    def __init__(self):
         self.client = pymongo.MongoClient()
         self.db = self.client["text_illustrator"]
-        self.collection = self.db[self.lang_db]
+        self.collection = self.db["language_info"]
+
+    def updateLanguage(self, lang, articleCount=-1, wordCount=-1, mxFreq=-1, sites=[]):
+        entry = {"language":lang.lower(), "articleCount":articleCount, "wordCount":wordCount, "maxFreq":mxFreq, "sites":sites}
+        self.collection.update({"language":lang.lower()}, {"$set":entry}, upsert=True)
+
+    def getLanguage(self, lang):
+        return self.collection.find_one({"language":lang.lower()})
+
+class LanguageModel_Mongo(object):
+    def __init__(self, lang_uri, lang, languageModel):
+        self.lang_uri = lang_uri
+        self.lang = lang
+        self.client = pymongo.MongoClient()
+        self.db = self.client["text_illustrator"]
+        self.collection = self.db[self.lang]
 
     def __load_from_langmodel__(self, languageModel):
         print "Loading language Model"
@@ -77,7 +89,7 @@ class LanguageModel_Mongo(object):
 
     def __update_word__(self, word):
         "update word"
-        wentry = {"word":word.key(), "freq":word.getFreq(), "sub_freq":word.getSubFreq(), "superwords":word.getSuperWords(), "articles":word.getArticlesByRef()}
+        wentry = {"word":word.key(), "word_count":word.word_count, "freq":word.getFreq(), "sub_freq":word.getSubFreq(), "superwords":word.getSuperWords(), "articles":word.getArticlesByRef()}
         self.collection.update_one({"_id":word._id}, {"$set":wentry})
     def __process_word__(self, word):
         "process word"

@@ -1,8 +1,9 @@
 #import article
 
 class Word:
-    def __init__(self, word, sub_freq=0, freq=0,superwords=dict()):
+    def __init__(self, word, word_count=1, sub_freq=0, freq=0,superwords=dict()):
         self.word = word.lower()#spelling
+        self.word_count = word_count #for pairs
         self.sub_freq = sub_freq #only relevant if it is an actual word
         self.freq = freq
         self.articles = [] #articles that use this word
@@ -24,6 +25,8 @@ class Word:
     def getSubFreq(self):
         return self.sub_freq
 
+    def articleCount(self):
+        return len(self.articles)
     def getArticlesByRef(self):
         if isinstance(self.articles, dict):
             return self.articles

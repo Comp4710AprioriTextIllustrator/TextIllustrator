@@ -1,13 +1,13 @@
 from pymongo import MongoClient
 from article import Article, ArticleDB
-from language import LanguageModel, LanguageModel_Mongo
+from language import LanguageModel, LanguageModel_Mongo, LanguageInfoModel_Mongo
 max_articles = 10
-mxSetSize = 1
+mxSetSize = 3
 lang = "English"
 #def generate():
 
 sites = ["bbc.com", "bbc.co.uk"]
-def generate_model(lang, sites, settings, mxParse=100):
+def generate_model(lang, sites, settings, mxParse=10):
     model = LanguageModel(lang)
     mongo = LanguageModel_Mongo("", lang, None)
     parsed = 0
@@ -18,7 +18,11 @@ def generate_model(lang, sites, settings, mxParse=100):
         txt = ' '.join(a.get('text',''))
         adate = ' '.join(a.get('time',''))
         url = ''.join(a.get('url',''))
-        atitle = ' '.join(a.get('title',''))
+        atitle = ""
+        if isinstance(a.get('title', []), list):
+            atitle = ' '.join(a.get('title',''))
+        elif isinstance(a.get('title', ""), basestring):
+            atitle = a.get('title', "")
         for s in sites:
             if s in url:
                 a = Article(text=txt, title=atitle, src=url, date=adate, nid=a['_id'], language_model=model)
@@ -31,4 +35,14 @@ def generate_model(lang, sites, settings, mxParse=100):
     for k, w in model.words.iteritems():
         mongo.__process_word__(w)
 
-generate_model(lang, sites, None, 100)
+    #Update Language Info
+    langInfo = LanguageInfoModel_Mongo()
+
+    keys = sorted(model.words.keys())
+    freq = model.getWordsByFrequency()
+
+    langInfo.updateLanguage(lang, parsed, len(model.words.keys()), sorted(freq.keys())[len(freq)-1], sites)
+
+    return mongo
+
+m = generate_model(lang, sites, None, 10)
