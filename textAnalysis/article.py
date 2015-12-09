@@ -13,9 +13,12 @@ class ArticleDB(object):
         if isinstance(index, list):
             return None
         elif index >= 0:
-            return self.__collection.find(ref)[index]
+            return self.__collection.find()[index]
         elif index == -1:
             return self.__collection.find(ref)
+
+    def count(self):
+        return self.__collection.count()
     """
     def get(self, ref):
         if isinstance(ref, list):
@@ -73,6 +76,9 @@ class Article(object):
         w.superwords[word.lower()] = w.superwords.get(word.lower(), 0) + 1
 
     def __update_word__(self, word):
+        if word == ' ':
+            return
+        print word
         if self.words.get(word.lower(), None) == None:
             self.words[word.lower()] = Word(word)
 
@@ -91,28 +97,38 @@ class Article(object):
 
                     self.__update_subword__(sub_word, word)
 
-    def analyze(self):
+    def analyze(self, mxSetSize=1):
         words = self.text.replace('\n',' ')
         words = words.replace('\t',' ')
-        words = words.replace('.', ' ')
-        words = words.replace(',', ' ')
-        words = words.replace('/', ' ')
-        words = words.replace('(', ' ')
-        words = words.replace(')', ' ')
-        words = words.replace(';', ' ')
-        words = words.replace('\"', ' ')
-        words = words.replace('?', ' ')
-        words = words.replace('!', ' ')
-        words = words.replace('[', ' ')
-        words = words.replace(']', ' ')
+        words = words.replace('.', '')
+        words = words.replace(',', '')
+        words = words.replace('/', '')
+        words = words.replace('(', '')
+        words = words.replace(')', '')
+        words = words.replace(';', '')
+        words = words.replace('\"', '')
+        words = words.replace('?', '')
+        words = words.replace('!', '')
+        words = words.replace('[', '')
+        words = words.replace(']', '')
         words = words.split(' ')
         #rehersal_loop = []*self.__rehersal_loop_length__
+        wset = []
         for w in words:
-
             """
             get distance from previous words
             """
-            self.__update_word__(w)
+            if len(wset) >= mxSetSize:
+                temp = []
+                temp[0:(mxSetSize-1)] = wset[1:mxSetSize]
+                wset = temp
+            else:
+                wset.append(w)
+
+            for j in range(0, len(wset)+1):
+                #print wset[0:j]
+                #nw = ' '.join(wset[0:j])
+                self.__update_word__(' '.join(wset[0:j]))
 
         if self.language_model != None:
             for k, v in self.words.iteritems():
@@ -133,3 +149,19 @@ class Article(object):
             bucket.append([k,v])
 
         return wordsByFreq
+
+    def getSalientSets(self, mxSetSize=1, seperators=[]):
+        sets = dict()
+        words = words.split(' ')
+        setlen = 0
+        for wi in range(0, len(words)):
+            setlen = max(wi + mxSetSize, len(words))
+            wset = []
+            for wj in range(wi, setlen):
+                "is salient"
+                wset.append(words[wi])
+                "look up in database"
+
+
+            print "look up..."
+

@@ -2,36 +2,33 @@ from pymongo import MongoClient
 from article import Article, ArticleDB
 from language import LanguageModel, LanguageModel_Mongo
 max_articles = 10
-
+mxSetSize = 1
+lang = "English"
 #def generate():
-client = MongoClient()
-db = client['text_illustrator']
-articles = db['articles'].find()
-#print articles
-dutch = LanguageModel("Dutch")
-dutch_mongo = LanguageModel_Mongo("", "dutch", None)
-parsed = 0
-#connect to db
-#for each article
 
-articleDB = ArticleDB()
-max_articles = 10 #articles.count()
-while (parsed < max_articles or max_articles == -1):
-    #print "Parsing Article"
-    a = articleDB.get(parsed)
-    txt = ' '.join(a['text'])
-    adate = ' '.join(a['time'])
-    url = ''.join(a['url'])
-    atitle = ' '.join(a['title'])
-    a = Article(text=txt, title=atitle, src=url, date=adate, nid=a['_id'], language_model=dutch)
-    a.analyze()
-    parsed += 1
+sites = ["bbc.com", "bbc.co.uk"]
+def generate_model(lang, sites, settings, mxParse=100):
+    model = LanguageModel(lang)
+    mongo = LanguageModel_Mongo("", lang, None)
+    parsed = 0
 
-#l = dutch.getWordsByFrequency()
-print "Inserting into Database"
-dutch_mongo.collection.drop()
-for k, w in dutch.words.iteritems():
-    dutch_mongo.__process_word__(w)
+    articleDB = ArticleDB()
+    while (parsed < mxParse or (max_articles == -1 and articleDB.count())):
+        a = articleDB.get(index=parsed)
+        txt = ' '.join(a.get('text',''))
+        adate = ' '.join(a.get('time',''))
+        url = ''.join(a.get('url',''))
+        atitle = ' '.join(a.get('title',''))
+        for s in sites:
+            if s in url:
+                a = Article(text=txt, title=atitle, src=url, date=adate, nid=a['_id'], language_model=model)
 
-print "Articles Parsed: ", articles.count()
-#generate()
+        a.analyze(mxSetSize)
+        parsed += 1
+
+    print "Parsed ", parsed, " Articles. Inserting into Database"
+    mongo.collection.drop()
+    for k, w in model.words.iteritems():
+        mongo.__process_word__(w)
+
+generate_model(lang, sites, None, 100)
