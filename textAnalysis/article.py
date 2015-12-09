@@ -182,8 +182,8 @@ class Article(object):
                 wAFreq = wdata.articleCount()
                 #print wdata.articles
                 wOFreq = wdata.getFreq()
-
+                articleSaliencyScore = 1 - float(self.words[w[0]].freq)/float(len(self.words.keys()))
                 if wOFreq < OFreq and wAFreq < AFreq:
-                    ret.append(w[0])
+                    ret.append([w[0], articleSaliencyScore])
 
         return ret
