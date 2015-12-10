@@ -12,10 +12,19 @@ def generate_model(lang, sites, mxParse=-1, mxSetSize=3):
     articleDB = ArticleDB()
     while (parsed < mxParse or (mxParse == -1 and parsed < articleDB.count())):
         a = articleDB.get(index=parsed)
-        txt = ' '.join(a.get('text',''))
+        txt = ""#' '.join(a.get('text',''))
         adate = ' '.join(a.get('time',''))
-        url = ''.join(a.get('url',''))
+        url = ""#''.join(a.get('url',''))
         atitle = ""
+
+        if isinstance(a.get('url', []), list):
+            url = ' '.join(a.get('url',''))
+        elif isinstance(a.get('url', ""), basestring):
+            url = a.get('url', "")
+        if isinstance(a.get('text', []), list):
+            txt = ' '.join(a.get('text',''))
+        elif isinstance(a.get('text', ""), basestring):
+            txt = a.get('text', "")
         if isinstance(a.get('title', []), list):
             atitle = ' '.join(a.get('title',''))
         elif isinstance(a.get('title', ""), basestring):
@@ -46,4 +55,4 @@ def generate_model(lang, sites, mxParse=-1, mxSetSize=3):
 """
 Example
 """
-m = generate_model("English", ["bbc.com", "bbc.co.uk"], -1, 1)
+#m = generate_model("English", ["bbc.com", "bbc.co.uk"], -1, 1)
