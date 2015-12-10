@@ -1,4 +1,7 @@
 # TextIllustrator
+
+Project paper and its source is in the paper directory
+
 ## Installing Dependencies
 Dependencies are installed using pip. Installation instructions for pip can be found [here](https://pip.readthedocs.org/en/stable/installing)
 ```
