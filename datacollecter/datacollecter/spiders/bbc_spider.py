@@ -6,7 +6,7 @@ class BbcSpider(scrapy.Spider):
     # Name must be specified outside of the constructor in order to be able to crawl using this spider
     name = "bbc"
     max_articles = 2000
-    
+
     def __init__(self, *args):
         self.allowed_domains = ["bbc.com", "bbc.co.uk"]
         self.start_urls = ["http://www.bbc.com"]
@@ -22,16 +22,16 @@ class BbcSpider(scrapy.Spider):
         }
 
         self.article_count = 0
-    
+
         scrapy.Spider.__init__(self, *args)
-    
+
     def parse(self, response):
         articles_on_page = response.xpath("//a//@href")
         for article_url in articles_on_page:
             if self.news_re.match(article_url.extract()):
                 full_article_url = response.urljoin(article_url.extract())
                 yield scrapy.Request(full_article_url, callback=self.parse_article)
-    
+
     def parse_article(self, response):
         # Only works for specific sections
         if self.crawler.stats.get_value('pages_crawled') < self.max_articles:
@@ -41,7 +41,7 @@ class BbcSpider(scrapy.Spider):
                     if article_item:
                         self.crawler.stats.inc_value('pages_crawled')
                         yield article_item
-        
+
             articles_on_page = response.xpath("//a//@href")
             for article_url in articles_on_page:
                 if self.news_re.match(article_url.extract()):
@@ -50,25 +50,25 @@ class BbcSpider(scrapy.Spider):
                         if invalid_re.match(article_url.extract()):
                             invalid = True
                             break
-                            
+
                     if invalid:
                         continue
-                            
+
                     if self.crawler.stats.get_value('pages_crawled') < self.max_articles:
                         full_article_url = response.urljoin(article_url.extract())
                         yield scrapy.Request(full_article_url, callback=self.parse_article)
-        
+
     def parse_world_article(self, response):
         title = response.xpath("//h1[@class = 'story-body__h1']//text()[1]").extract()
         text = response.xpath("//div[@class ='story-body']//p//text()").extract()
-        
+
         # Ensure there is a title for the articles
         if len(title) == 0:
             return None
-        
+
         article_item = datacollecter.items.ArticleItem()
         article_item['title'] = title[0]
         article_item['text'] = text
         article_item['url'] = response.url
         return article_item
-        
+
