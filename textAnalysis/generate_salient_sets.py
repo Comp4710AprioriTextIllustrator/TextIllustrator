@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from article import Article, ArticleDB
 from language import LanguageModel, LanguageModel_Mongo
 
-mxSetSize=1
+#mxSetSize=1
 def get_article(article):
     txt = ' '.join(article.get('text',''))
     adate = ' '.join(article.get('time',''))
@@ -15,7 +15,7 @@ def get_article(article):
 
     return Article(text=txt, title=atitle, src=url, date=adate, nid=article['_id'], language_model=model)
 
-def salient_sets(article_set, model):
+def salient_sets(article_set, model, mxSetSize=2):
     print "Generating Salience Sets..."
     ret = []
     for aj in article_set:
@@ -26,12 +26,12 @@ def salient_sets(article_set, model):
     return ret
 
 
-"""
-Example
+
+#Example
 
 model = LanguageModel_Mongo("", "English", None)
 articles = ArticleDB()
 
 a = [articles.get(0), articles.get(1)]
 ret = salient_sets(a, model)
-"""
+

@@ -5,7 +5,9 @@
 \usepackage{comment}
 \title{Illustrating Text}
 \author{Christopher Catton, Partick Murphy, Charles Ung}
+\date{December 10, 2015}
 \begin{document}
+\maketitle
 \section{Introduction}
 %discuss the human link -- the relationship of text and visualization -- motivation
 \paragraph{}
@@ -33,25 +35,38 @@ same thing (i.e. \ describe the same event or idea).
 
 %define applications
 \paragraph{}
-Providing translations
-\paragraph{}
-Language learning
+An interesting, but difficult application for this problem is to generate visual translations. 
+Providing an image for a small set of texts can aide in translation or even language learning
+tasks, but it is dificult to illustrate certain language elements. Take for example elements
+such as `a', `but', `or', or even `context'. There are a lot of elements that may not be 
+easily transcribed into an image, but others such as `man', `woman', and `building' could
+easily be transcribed. There are also more complex elements that can be described such as
+the word `luck' or `lottery'. There are difficulties in any approach to translate and 
+teaching languages and we believe that generating visual illustrations as we attempt to do 
+is a possible application.
+
 \paragraph{}
 Generating datasetss for related problems
+Another application is generating datasets for other related problems such as trying to 
+describe a given image. The task has been tried before and this could potentially generate
+a dataset for training a neural network for doing the task. This probably could be best 
+achieved by building a dataset for training an object recognition network. In the simplest
+form of the problem we are setting out to achieve could result in providing a set of collages
+with images keyed to a certain location in each matrix produced from a keyword/phrase set.
+
 \paragraph{}
-Organization of Paper \\
---Related Work \\
---Basic Method \\
---Detailed Discussion of Each Step \\
---Conclusions \\
---Future Work \\
---Modification by each step \\
+There are many facets to the given problem and this paper is organize to partition each step. This
+paper first discusses the basic method of acheiving results and then details each step. The details
+are then followed by our conclusions of our exploration. The last section is a discussion on what 
+can be done to improve our results and what modifications can be done to create more complex, 
+interesting, and generally better performing models.
 
 \section{Related Work}
 Related Work
 -- Computer Vision
 
 \section{Basic Method}
+
 \paragraph{}
 The basic method or principle for the problem is to take or generate a language model for
 each language that is to be used. Then to take a set of texts written in languages that we
@@ -60,6 +75,7 @@ text. We then take a model that converts the keywords into a set of images with 
 format. Then we perform the very important step of partitioning the images into subsections
 between the languages. We then arrive at the last step where we take the set of images and
 combine them in a meaningful way to illustrate the texts.
+
 \paragraph{}
 In generating the language model for the languages used, we used basic apriori methods to
 give us relevant data for words and word pairs. Usage of non-aprori methods in way works
@@ -69,6 +85,7 @@ the use of images annotated with keywords and phrases. Non-apriori methods may p
 a better measure of salience then apriori method, but take away from what we are trying
 to explore in a finer grained sense. Ideally we should be able to assign meaning to a text
 without already knowing details of a language as mentioned priori.
+
 \paragraph{}
 The partitioning of images is the task we would say is the most important step. It is where
 we believe we can take a keyword or phrase, a word part, from one language and assign it a 
@@ -81,83 +98,166 @@ not two texts are two different encodings of the same thing. If the two texts ar
 the same thing, i.e. \ the measure is high, then logically image sets that measure less similar
 are still encoding the same material. But, they are also better encodings for their language
 since they are also incorporating nuances of the language and culture encoding them.
+
 \paragraph{}
 There are more advanced methods for dealing with image sets that should provide much better
 results and more flexibility in their use. Those methods are discussed at the end of the paper. 
 We felt that usage of simple methods would act as a much better illustration of the problem and
 its difficulty. Our decision to use simpler methods does come with a number of difficulties in
 itself that may not be difficulties of the advanced methods discussed.
-\section{Generating Dataset(s)}
-In our study we created our own dataset(s) in order to generate a dataset containing the data we need. We generated the dataset by crawling and scraping separate news sites. These new sites include the British Broadcasting Corporation, the New York Times, De Telegraaf, and De Volkskrant. Our data is tuple of the source, date, and text of an article.
-Instead of gathering data related to images, we use google image search to generate a set of images related to a set and subsets of the words we extract from a text. In other related studies this task can be done by adding images that appear with a text, but we chose to use google image search to reduce the amount of scraping we need to do to generate our dataset.
-\subsection{Generate Language Models}
+
+\section{Generating Language Model Dataset(s)}
+In our study we created our own dataset(s) in order to generate a dataset containing the data we 
+need. We generated the dataset by crawling and scraping separate news sites. These new sites 
+include the British Broadcasting Corporation, the New York Times, De Telegraaf, and De Volkskrant. 
+Our data is tuple of the source, date, and text of an article. Instead of gathering data related 
+to images, we use google image search to generate a set of images related to a set and subsets of 
+the words we extract from a text. In other related studies this task can be done by adding images 
+that appear with a text, but we chose to use google image search to reduce the amount of scraping 
+we need to do to generate our dataset.
+
+\section{Generate Language Models}
+
 \paragraph{}
-We include a number of steps for generating language models that each build on each other. This allows us to create illustrations at different steps of computation and view the effects of different algorithms.
+In our study we create language models for languages of articles that we illustrate. We do this using 
+apriori methods and first find frequency for each word and for each set of words with each set being 
+of length N or less. We automatically remove punctuation marks and split on each space and parse each
+word as part of sets between the size of 1 < N, with N being the max set size. Each set is constructed
+with words found by each other. This is the stage we generate frequency overall, and frequency over 
+articles for each word and word pair. This stage should be achieved while parsing each article only once.
+
 \paragraph{}
-In our study we create language models for languages of articles that we illustrate. We do this using apriori methods and first find frequency for each word and for each set of words with each set being of length N or less. We include a settings parameter to allow for the inclusion of splits on choice punctuation marks. In this stage we generate frequency overall, and frequency over articles for each word and word pair. This stage should be achieved while parsing each article only once.
+In more detail, we select a number of sites that are written in a specific language and parse the articles
+we have already obtained in generating our dataset. Each Article is then processed to obtain the frequency
+for each word and phrase of an appropriate size. After each Article is parsed its words and statistics are
+added to the language model.
 
--Frequency Overall is the sum of the frequency of a given word set in each article for a given language
--Frequency Over Articles is the number of articles a word appears in for a given language
+\paragraph{}
+We expect the least interesting articles would appear the most frequently across articles in any given 
+language. In-frequent word sets over all articles that are frequent in a small set of articles are likely 
+to be salient for a given article. It is difficult to establish word and word-set salience even with the 
+frequencies. Some words may be infrequent and frequent in articles, but not really descriptive of the 
+article in general. In using this stage it is necessary to establish cut-off points for salient and 
+non-salient word-sets.
 
-We expect the least interesting articles would appear the most frequently across articles in any given language. In-frequent word sets over all articles that are frequent in a small set of articles are likely to be salient for a given article. It is difficult to establish word and word-set salience even with the frequencies. Some words may be infrequent and frequent in articles, but not really descriptive of the article in general. In using this stage it is necessary to establish
-cut-off points for salient and non-salient word-sets.
+\section{Generating Salient Keyword/Phrase Sets}
+Generating salient sets is fairly easy compared with establishing a language model. To get a set of 
+salient-words for a given article we provide the statistics for a given article and take the language 
+model for the article. We use the language model to remove non-salient words from the article and then 
+use some combination of statistics of the word for the article and in the language. It is hard to
+determine a good combination of the statistics that represent the salience of a given word or word-set. 
+Determining a statistic that represents good salience for a word or word-set is a problem on its own.
+\paragraph{}
+In this paper we choose a the combination:
+$$1-frequencyInArticle(Word)/numberOfWordsInArticle$$
+to represent the salience of a word or word-set.
+\paragraph{}
+We also use two thresholds to remove non-salient words. One is the percent of articles that a word or
+word-set appears in and the other is how many occurences does the word appear overall.
 
-\subsubsection{L1, Possible Extensions}
-A possible extension of L1 is to take into account the time each article is written and published. We expect that certain words are more likely to be published during certain time periods of the year such as during holidays (e.g. Christmas, Thanksgiving, etc..). Also, articles related to a crisis would likely be published during a certain span of time and possibly articles would be published in rememberance of them (e.g. 911).
+\section{Generating Image Sets}
+In our project we require a large number of images with similar annotations of keywords for each language 
+used. The keywords for certain images may differ for each image, but there should be an intersection among 
+the images for a select set of keywords. Since this is difficult to obtain on our own we, in our project, 
+turned to google to obtain sets of images for keywords.
+\paragraph{}
+In generating a number of seperate sets for each set of salient keyword/phrase sets, we hope to be able
+to determine whether there are any sets, generated by different texts, that are similar enough to be
+considered the same. If they are similar enough it follows that the texts are encoding the same material 
+and we can possibly say that if the articles are in different languages then they are approximate 
+translations of each other.
+\paragraph{}
+After downloading images from the Google search image API of salient word sets from the article, the common 
+subset of images within these sets must be found. This can be done by finding the intersection of all the 
+sets. In our implemnetation, we first created subset that was the intersection of two sets and then 
+iteratively performed the intersection of this subset with each other set of images. Since the number of 
+images is relatively large, all the images in two sets could not be loaded into memory at once. To deal with 
+this issue, the intersection algorithm used was a block-based intersection which loads two blocks of 50 images 
+into memory, then compares each image in 1 block to each image in the other block and output images which are 
+in both blocks. To compare the images two different comparison tests were used. For two images to be considered 
+the same, they must pass either or both of the comparison tests. The first test was a simple pixel by pixel 
+comparison, if for each pixel in each image the values of the pixels were equal then the two images are the 
+same. The second comparison test was to take the average colour of all the pixels in a different square regions 
+of the images and compare them. If the average colours in each of the regions were the same, then the images 
+are considered the same.
 
-\subsubsection{L2, Sub-words and Word Order}
-In many words their is a tendency for certain word-parts to take a certain order which may vary for a number of reasons such as whether a phrase is a question or statement. In the L2 stage we this into account and try to determine whether a language has such an order and when or whether it changes during certain contexts. We can determine whether there is a word order by determining if two or more words appear along-side each other relatively frequently.
-
-Another concern about word parts is that certain parts, such as nouns, may be considered more salient for illustration. It may be possible to determine whether a particular word is a noun, verb, etc.
-by considering their frequency along-side closely occuring words and their order. But, this is a difficult task on its own.
-
-Another consideration is that some languages compound words together or have prefixes and suffixes attached to words in certain contexts. 
-In order for us to determine whether a word occurs within a compound word would be to check whether it appears alone, 
-it's frequency overall (the word 'a' is likely to appear in a lot of words, but it is not a subword), and its frequency as a subword.
-
-\subsection{Generating Salient Sets}
-Generating salient sets is fairly easy compared with establishing a language model. To get a set of salient-words for a given article we provide the L1 statistics for a given article and take the language model for the article. We use the article to remove non-salient words from the article and then use a combination of statistics of the word for the article and in the language.
-
-\subsection{Generating Image Sets}
-In our project we require a large number of images with similar annotations of keywords for each language used. The keywords for certain images may differ for each image, but there should be an intersection among the images for a select set of keywords. Since this is difficult to obtain on our own we, in our project, turned to google to obtain sets of images for keywords.
-
-\subsection{Generating Relevant Image Set}
-After downloading images from the Google search image API of salient word sets from the article, the common subset of images within these sets must be found. This can be done by finding the intersection of all the sets. In our implemnetation, we first created subset that was the intersection of two sets and then iteratively performed the intersection of this subset with each other set of images.
-Since the number of images is relatively large, all the images in two sets could not be loaded into memory at once. To deal with this issue, the intersection algorithm used was a block-based intersection which loads two blocks of 50 images into memory, then compares each image in 1 block to each image in the other block and output images which are in both blocks.
-To compare the images two different comparison tests were used. For two images to be considered the same, they must pass either or both of the comparison tests. The first test was a simple pixel by pixel comparison, if for each pixel in each image the values of the pixels were equal then the two images are the same. The second comparison test was to take the average colour of all the pixels in a different square regions of the images and compare them. If the average colours in each of the regions were the same, then the images are considered the same.
-
-\subsubsection{I1}
-In I1 we obtain a set of images based on a set of keywords. Among the image sets we would assume that we would 
-be able to generate an intersection of image sets that would be representative of two articles discussing the 
-same thing. Some articles, not in the intersection would be better representative of a given article and even their language. 
-Possibly, we would be able to even find images or sets of images that would represent a difference in how speakers of two different languages
-view the topic or even the words and phrases themselves.
-
-\subsection{Generating Illustrations}
-The last and final step in our project is how we visualize the image-sets and the keyword salience. Ideally we would be able to combine the images into a single images, but that is a difficult task even if we know what features and feature-groups a keyword or keyword-set occurs too.
+\section{Generating Illustrations}
+The last and final step in our project is how we visualize the image-sets and the keyword salience. Ideally we 
+would be able to combine the images into a single images, but that is a difficult task even if we know what 
+features and feature-groups a keyword or keyword-set relates to. Instead we opted for creating collage of the 
+images within a set. This means that we would generate something similar to what one might expect an output of 
+a model for object segmentation. There are no masks of objects, but we might expect that certain positions in 
+a matrix to be occupied by a certain object for a salient set.
+\paragraph{}
+In arranging images in a collage we get around the problem of trying to combine them and possibly provide 
+something in way of a story arc. It should show more meaningful visualization of the article at the origin of 
+the matrix then in other places, provided that the salience measure is correct. It is also fairly culturally 
+ambiguous since a lot of cultures have come to expect items to start in the top-left in recent times. But, 
+there are more culturally ambiguous ways to create illustrations as well (which are more difficult).
 
 \section{Conclusion and Problems}
--- better datasets needed
-
-\subsection{Problems}
-One problem we encountered was that the Google image seach API only allows for 100 searches per day for free, so gathering enough images for each of the salient sets was impossible.
+One problem we encountered was that the Google image seach API only allows for 100 searches per day for free, so 
+gathering enough images for each of the salient sets was impossible. This in turn has made it impossible to 
+get the results we would consider significant. To obtain the results we want we will need access to a database 
+that we can obtain a much larger set of images for each salient set. This may be achieved by data-mining for
+images based on the salient sets themselves. Though there are possible ways of reducing the requirement of a
+large amount of images which are discussed later.
+\paragraph{}
+Another problem is validation of results. Since we were unable to obtain the results needed, it is not relevant
+that we cannot evaluate them. But, it needs to be discussed how we would go about evaluating the results had 
+we obtained them. For this task we probably we need to crowd-source in order to have people evaluate the accuracy 
+of the results. It isn't out of ordinary to need actual people to be involved the actual evaluation of the results. 
+In computer vision a lot of data for evaluating models for generating salience or object segmentation have manually 
+generated data from people. For us, we would not need any special tools such as eye-tracking tools to determine 
+the accuracy though.
 
 \section{Future Work}
 -- better datasets (particularly for images)
 -- more complex analysis of images
 -- break down of images into features and feature groups
 
-\subsection{Modelling a Language}
--- use non-apriori methods
--- user generated keywords and machine learning
--- more complex apriori methods
+\subsection{Datasets}
+Future work needs access to a larger set of images annotated with keywords and phrases. It may be necessary to mine 
+for the images and annotations specifically or to crowd source the annotations of mined images. But, it is achievable 
+and may provide the results we wished to achieve. One issue we found with google is that the search, provided with two 
+words that are nearly identical in meaning, does not provide nearly identical results. Ideally images would have 
+similar ranking in a search for words with a similar meaning. We went in expecting there to be a large reuse of images 
+between people of different language groups, but our observations now point us in a different direction.
 
-\subsection{Image Dataset}
--- Create custom dataset by crowd-sourcing or move intensive data-mining for reuse of images
+\subsection{Language Model}
+A possible extension of how we generate a language model is to take into account the time each article is written and 
+published. We expect that certain words are more likely to be published during certain time periods of the year such as 
+during holidays (e.g. Christmas, Thanksgiving). Also, articles related to a crisis would likely be published during a 
+certain span of time and possibly articles would be published in rememberance of them (e.g. 911).
+\paragraph{}
+In many languages their is a tendency for certain word-parts to take a certain order which may vary for a number of 
+reasons such as whether a phrase is a question or statement. In later iterations of our language model we can take 
+this into account and try to determine whether a language has such an order and when or whether it changes during 
+certain contexts. We can determine whether there is a word order by determining if two or more words appear 
+along-side each other relatively frequently.
+\paragraph{}
+Another concern about word-parts is that certain parts, such as nouns, may be considered more salient for illustration. 
+It may be possible to determine whether a particular word is a noun, verb, etc. \ by considering their frequency 
+along-side closely occuring words and their order. But, this is a difficult task on its own.
+\paragraph{}
+Another consideration is that some languages compound words together or have prefixes and suffixes attached to words in certain contexts. 
+In order for us to determine whether a word occurs within a compound word would be to check whether it appears alone, 
+it's frequency overall (the word `a' is likely to appear in a lot of words, but it is not a subword), and its frequency as a subword.
+\paragraph{}
+The task of getting relevant salient sets of words isn't necessarily resrticed to apriori methods or even traditional 
+data-mining techniques. In a way using non-apriori methods may detract from ascertaining the meaning from the image sets 
+we find. But, their results could still be considered interesting and relevant. It would be an interesting task to design 
+a neural network to determine word salience or even to get it to create the illustrations. Some machine learning and a 
+training set to determine thresholds for what is and is not salient could go a long ways. The thresholds would probably 
+maintain relevance across different methods of solving the problem, but right now we are only guessing and manually 
+adjusting them.
 
 \subsection{Image Analysis and Partitioning of Image Sets}
-A possible extension of this stage would be to incorporate machine learning and computer vision to be able to find features and feature-groups within an image. Using features and feature-groups we may be able to find which features or feature-groups relate to each keyword or keyword-set and pick images based on this. This step is already improved if we are able to match multiple modifications of a single image and throwing away the modified versions. Looking at an image on a feature basis allows
-us to generate a better set of images that represent the keywords better.
+A possible extension of this stage would be to incorporate machine learning and computer vision to be able to find 
+features and feature-groups within an image. Using features and feature-groups we may be able to find which features 
+or feature-groups relate to each keyword or keyword-set and pick images based on this. This step is already improved 
+if we are able to match multiple modifications of a single image and throwing away the modified versions. Looking at 
+an image on a feature basis allows us to generate a better set of images that represent the keywords better.
 
 \subsection{Illustration}
 -- Composite Images based on keywords

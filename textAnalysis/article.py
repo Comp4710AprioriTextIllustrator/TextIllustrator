@@ -145,7 +145,7 @@ class Article(object):
             if len(wset) >= mxSize:
                 temp = wset[1:mxSize]
                 wset = temp
-            elif w != '' and w != ' ':
+            elif w != '' and w != ' ' and w.isdigit() == False:
                 wset.append(w)
 
                 for i in range(1, len(wset)+1):
