@@ -8,7 +8,7 @@ from PIL import Image
 
 class AvgPixelsComparator(object):
     # Want to be able to tighten or loosen the comparison constraints 
-    def __init__(self, num_kernels_horizontal=2, num_kernels_vertical=2, avg_comparator=lambda x, y: x == y):
+    def __init__(self, num_kernels_horizontal=2, num_kernels_vertical=2, avg_comparator=lambda x, y: x[0] == y[0] and x[1] == y[1] and x[2] == y[2]):
         # This is an approximate number of kernels
         self.__num_kernels_horizontal = num_kernels_horizontal
         self.__num_kernels_vertical = num_kernels_vertical
@@ -44,7 +44,6 @@ class AvgPixelsComparator(object):
                 
                 image1_y += image1_kernel_vertical_move_amt
                 image2_y += image2_kernel_vertical_move_amt
-                print kernel_avg_image1, kernel_avg_image2
                 if not self.__avg_comparator(kernel_avg_image1, kernel_avg_image2):
                     same_image = False
                     break
@@ -63,13 +62,13 @@ class AvgPixelsComparator(object):
         return float(image_dimension)/num_kernels_on_dimension
         
     def __get_colour_avg_of_kernel(self, kernel_x, kernel_y, kernel_width, kernel_height, image):
-        pixel_sum = 0
-        print "New Kernel"
+        pixel_sum = [0, 0, 0]
         for i in range(kernel_width):
             for j in range(kernel_height):
-                print kernel_x, kernel_y, i, j, image.getpixel((int(kernel_x) + i, int(kernel_y) + j))
-                pixel_sum += image.getpixel((int(kernel_x) + i, int(kernel_y) + j))
-        return pixel_sum / float(kernel_width * kernel_height)
+                pixel_colour = image.getpixel((int(kernel_x) + i, int(kernel_y) + j))
+                for k in range(3):
+                    pixel_sum[k] += pixel_colour[k]
+        return [pixel_sum[i] / float(kernel_width * kernel_height) for i in range(len(pixel_sum))]
             
     
 def usage():
