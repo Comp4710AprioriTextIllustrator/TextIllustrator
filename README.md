@@ -20,11 +20,15 @@ scrapy crawl bbc
 1) use a spider or spiders to populate the database collection text_illustrator.articles with as much articles as you feel want
 2) for each language. choose a set of sites that represent a language and run:
 ```
-language_model = generate_model(sites, language_name, settings)
+import textAnalysis.generate_word_lis
+
+language_model = generate_model(language_name, sites, mxParse, mxSetSize)
 ```
 3) for each article or set of articles of your chouse, run
 ```
-word_sets = salient_sets(article_set)
+import textAnalysis.generate_salient_sets
+
+word_sets = salient_sets(article_set, model, mxSetSize, AFreqP, OFreqP)
 ```
 4) Download images for word sets...
 
