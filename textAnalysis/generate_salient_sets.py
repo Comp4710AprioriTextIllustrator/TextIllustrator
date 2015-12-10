@@ -21,6 +21,7 @@ def salient_sets(article_set, model, mxSetSize=2):
     for aj in article_set:
         article = get_article(aj)
         article.analyze(mxSetSize, update_model=False)
+        #ret.append(article)
         ret.append(article.getSalientSets(model.lang))
     print "Finished Generating Salience Sets..."
     return ret
@@ -28,10 +29,10 @@ def salient_sets(article_set, model, mxSetSize=2):
 
 
 #Example
-
+"""
 model = LanguageModel_Mongo("", "English", None)
 articles = ArticleDB()
 
 a = [articles.get(0), articles.get(1)]
 ret = salient_sets(a, model)
-
+"""

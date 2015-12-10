@@ -145,11 +145,11 @@ class Article(object):
             if len(wset) >= mxSize:
                 temp = wset[1:mxSize]
                 wset = temp
-            elif w != '' and w != ' ' and w.isdigit() == False:
+            if w != '' and w != ' ' and w.isdigit() == False:
                 wset.append(w)
 
                 for i in range(1, len(wset)+1):
-                    yield [' '.join(wset[0:i]), i]
+                    yield [' '.join(wset[0:i]).lower(), i]
 
     def getSalientSets(self, lang, mxSetSize=1, AFreqP=0.20, OFreqP=0.0625):
         sets = dict()
@@ -178,12 +178,10 @@ class Article(object):
         for w in self.genWordSets(mxSetSize):
             wdata = self.language_model.getWord(w[0])
             if wdata != None:
-                #print "TEST ", w
                 wAFreq = wdata.articleCount()
-                #print wdata.articles
                 wOFreq = wdata.getFreq()
                 articleSaliencyScore = 1 - float(self.words[w[0]].freq)/float(len(self.words.keys()))
                 if wOFreq < OFreq and wAFreq < AFreq:
                     ret.append([w[0], articleSaliencyScore])
 
-        return ret
+        return [ret, self]
