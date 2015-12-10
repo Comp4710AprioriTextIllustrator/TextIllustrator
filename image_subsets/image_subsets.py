@@ -1,18 +1,28 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 
-import image_iterator
 import comparators.pixel_comparator
+import comparators.chained_image_comparator
+import comparators.avg_pixel_comparator
+import image_iterator
 import sys
 
 # Not really sets, since they may contain "duplicate" images(ie ones that when compared return True)
-def get_common_subset_of_image_sets(image_subsets, comparator):
+'''
+Input:
+    image_sets: A list of sets where each set contains a list of file paths for the images to be compared
+    comparator: A comparator that will be used to compare the images
+Output:
+    The common subset of all the image_sets
+'''
+def get_common_subset_of_image_sets(image_sets, comparator):
     if len(image_subsets) == 0:
         return None
         
-    current_image_set = image_subsets[0]
-    for image_set in image_subsets[1:]:
-        current_image_set = intersection_of_sets(current_image_set, image_set, comparator)
+    current_image_subset = image_sets[0]
+    for image_set in image_sets[1:]:
+        # Refine the subset
+        current_image_subset = intersection_of_sets(current_image_subset, image_set, comparator)
     
     return current_image_set
 
@@ -44,16 +54,7 @@ def parse_subsets(subset_file):
             curr_subset.append(curr_line.strip())
         
         curr_line = subset_file.readline()
-    '''for subset_line in subset_file:
-        print subset_line
-        curr_line = subset_line.strip()
-        if curr_line == '' and len(curr_subset) > 0:
-            subsets.append(curr_subset)
-            curr_subset = []
-            break
-            
-        curr_subset.append(curr_line)
-    '''
+
     if len(curr_subset) > 0:
         subsets.append(curr_subset)
     return subsets
@@ -93,7 +94,9 @@ if __name__=="__main__":
             
             print image_subsets
             if image_subsets:
-                print get_common_subset_of_image_sets(image_subsets, comparators.pixel_comparator.PixelComparator())
+                chained_comparators = [comparators.pixel_comparator.PixelComparator(), comparators.avg_pixel_comparator.AvgPixelComparator()]
+                comparator = comparators.chained_image_comparator.ChainedImageComparator(image_comparators=chained_comparators)
+                print get_common_subset_of_image_sets(image_subsets, comparator)
         except Exception as e:
             print e
             usage()

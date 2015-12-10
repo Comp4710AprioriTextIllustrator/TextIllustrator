@@ -46,7 +46,7 @@ teaching languages and we believe that generating visual illustrations as we att
 is a possible application.
 
 \paragraph{}
-Generating datasetss for related problems
+Generating datasets for related problems.
 Another application is generating datasets for other related problems such as trying to 
 describe a given image. The task has been tried before and this could potentially generate
 a dataset for training a neural network for doing the task. This probably could be best 
@@ -63,7 +63,7 @@ interesting, and generally better performing models.
 
 \section{Related Work}
 Related Work
--- Computer Vision
+-- Computer Vision, Natural Language Processing
 
 \section{Basic Method}
 
@@ -141,6 +141,8 @@ article in general. In using this stage it is necessary to establish cut-off poi
 non-salient word-sets.
 
 \section{Generating Salient Keyword/Phrase Sets}
+
+\paragraph{}
 Generating salient sets is fairly easy compared with establishing a language model. To get a set of 
 salient-words for a given article we provide the statistics for a given article and take the language 
 model for the article. We use the language model to remove non-salient words from the article and then 
@@ -148,7 +150,7 @@ use some combination of statistics of the word for the article and in the langua
 determine a good combination of the statistics that represent the salience of a given word or word-set. 
 Determining a statistic that represents good salience for a word or word-set is a problem on its own.
 \paragraph{}
-In this paper we choose a the combination:
+In this project we choose a the combination:
 $$1-frequencyInArticle(Word)/numberOfWordsInArticle$$
 to represent the salience of a word or word-set.
 \paragraph{}
@@ -156,6 +158,8 @@ We also use two thresholds to remove non-salient words. One is the percent of ar
 word-set appears in and the other is how many occurences does the word appear overall.
 
 \section{Generating Image Sets}
+
+\paragraph{}
 In our project we require a large number of images with similar annotations of keywords for each language 
 used. The keywords for certain images may differ for each image, but there should be an intersection among 
 the images for a select set of keywords. Since this is difficult to obtain on our own we, in our project, 
@@ -169,7 +173,7 @@ translations of each other.
 \paragraph{}
 After downloading images from the Google search image API of salient word sets from the article, the common 
 subset of images within these sets must be found. This can be done by finding the intersection of all the 
-sets. In our implemnetation, we first created subset that was the intersection of two sets and then 
+sets. In our implementation, we first created subset that was the intersection of two sets and then 
 iteratively performed the intersection of this subset with each other set of images. Since the number of 
 images is relatively large, all the images in two sets could not be loaded into memory at once. To deal with 
 this issue, the intersection algorithm used was a block-based intersection which loads two blocks of 50 images 
@@ -182,6 +186,7 @@ of the images and compare them. If the average colours in each of the regions we
 are considered the same.
 
 \section{Generating Illustrations}
+\paragraph{}
 The last and final step in our project is how we visualize the image-sets and the keyword salience. Ideally we 
 would be able to combine the images into a single images, but that is a difficult task even if we know what 
 features and feature-groups a keyword or keyword-set relates to. Instead we opted for creating collage of the 
@@ -196,6 +201,7 @@ ambiguous since a lot of cultures have come to expect items to start in the top-
 there are more culturally ambiguous ways to create illustrations as well (which are more difficult).
 
 \section{Conclusion and Problems}
+\paragraph{}
 One problem we encountered was that the Google image seach API only allows for 100 searches per day for free, so 
 gathering enough images for each of the salient sets was impossible. This in turn has made it impossible to 
 get the results we would consider significant. To obtain the results we want we will need access to a database 
@@ -221,20 +227,21 @@ similar ranking in a search for words with a similar meaning. We went in expecti
 between people of different language groups, but our observations now point us in a different direction.
 
 \subsection{Language Model}
+\paragraph{}
 A possible extension of how we generate a language model is to take into account the time each article is written and 
 published. We expect that certain words are more likely to be published during certain time periods of the year such as 
 during holidays (e.g. Christmas, Thanksgiving). Also, articles related to a crisis would likely be published during a 
 certain span of time and possibly articles would be published in rememberance of them (e.g. 911).
 \paragraph{}
 In many languages their is a tendency for certain word-parts to take a certain order which may vary for a number of 
-reasons such as whether a phrase is a question or statement. In later iterations of our language model we can take 
+reasons such as whether a phrase is a question or statement. In later iterations of our language model, we would take 
 this into account and try to determine whether a language has such an order and when or whether it changes during 
 certain contexts. We can determine whether there is a word order by determining if two or more words appear 
 along-side each other relatively frequently.
 \paragraph{}
 Another concern about word-parts is that certain parts, such as nouns, may be considered more salient for illustration. 
 It may be possible to determine whether a particular word is a noun, verb, etc. \ by considering their frequency 
-along-side closely occuring words and their order. But, this is a difficult task on its own.
+along-side closely occuring words and their order. However, this is a difficult task on its own.
 \paragraph{}
 Another consideration is that some languages compound words together or have prefixes and suffixes attached to words in certain contexts. 
 In order for us to determine whether a word occurs within a compound word would be to check whether it appears alone, 
@@ -249,8 +256,9 @@ maintain relevance across different methods of solving the problem, but right no
 adjusting them.
 
 \subsection{Image Analysis and Partitioning of Image Sets}
+\paragraph{}
 A possible extension of this stage would be to incorporate machine learning and computer vision to be able to find 
-features and feature-groups within an image. Using features and feature-groups we may be able to find which features 
+features and feature-groups within an image. By using features and feature-groups, we may be able to find which features 
 or feature-groups relate to each keyword or keyword-set and pick images based on this. This step is already improved 
 if we are able to match multiple modifications of a single image and throwing away the modified versions. Looking at 
 an image on a feature basis allows us to generate a better set of images that represent the keywords better and means 
@@ -262,6 +270,7 @@ for all languages. This would be the best modification to our project and produc
 problems is the database for the images.
 
 \subsection{Illustration}
+\paragraph{}
 The step of creating the illustration can be modified in a number of ways. The best method likely varies based on what 
 you want to use the results for. For language learning and depending on the text size, it is probably best to either 
 find a single image that is representitive of the salient set it represents or to be able to combine the images or 
