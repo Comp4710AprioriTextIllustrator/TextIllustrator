@@ -212,10 +212,6 @@ generated data from people. For us, we would not need any special tools such as 
 the accuracy though.
 
 \section{Future Work}
--- better datasets (particularly for images)
--- more complex analysis of images
--- break down of images into features and feature groups
-
 \subsection{Datasets}
 Future work needs access to a larger set of images annotated with keywords and phrases. It may be necessary to mine 
 for the images and annotations specifically or to crowd source the annotations of mined images. But, it is achievable 
@@ -257,11 +253,19 @@ A possible extension of this stage would be to incorporate machine learning and 
 features and feature-groups within an image. Using features and feature-groups we may be able to find which features 
 or feature-groups relate to each keyword or keyword-set and pick images based on this. This step is already improved 
 if we are able to match multiple modifications of a single image and throwing away the modified versions. Looking at 
-an image on a feature basis allows us to generate a better set of images that represent the keywords better.
+an image on a feature basis allows us to generate a better set of images that represent the keywords better and means 
+that we possibly won't need to have as large of a database of images with similar keyword/phrase annotations.
+\paragraph{}
+Learning to relate features and feature-groups to keywords and keyphrases can be done independently for each language. 
+It may be possible to completely get around a need for a single database of images with keyword/phrase annotations 
+for all languages. This would be the best modification to our project and product the best results. One of the biggest 
+problems is the database for the images.
 
 \subsection{Illustration}
--- Composite Images based on keywords
--- Exploration of culturally ambiguous collages (Left-to-Right Right-to-Left)
--- Image Modification based Salience and Computer Vision
-
+The step of creating the illustration can be modified in a number of ways. The best method likely varies based on what 
+you want to use the results for. For language learning and depending on the text size, it is probably best to either 
+find a single image that is representitive of the salient set it represents or to be able to combine the images or 
+features related to the keywords into an image. In some cases it probably would be best to have a series of images 
+to represent a meaning. Illustrating certain actions would probably require multiple images to be accuratley 
+illustrated.
 \end{document}
